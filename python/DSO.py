@@ -1,44 +1,73 @@
 # -*- coding: UTF-8 -*-
 
-ImgDir = "img/"
+ImgDir = "img/" # каталог с изображениями
 
-MarkTxt = "Mark"
-Mark = ImgDir+"mark.png"
-Back = ImgDir+"back.png"
+MarkTxt = "Mark" # метка границы
+Mark = ImgDir+"mark.png" # картинка разделитель ("граница")
+Back = ImgDir+"back.png" # подложка
 
-Unit = { \
-"Armbrustschutze":ImgDir+"Armbrustschütze.png", \
-"Berserker":ImgDir+"Berserker.png", \
-"Bogenschutzen":ImgDir+"Bogenschützen.png", \
-"BrullenderStier":ImgDir+"BrüllenderStier.png", \
-"Deckschrubber":ImgDir+"Deckschrubber.png", \
-"DickeBertha":ImgDir+"DickeBertha.png", \
-"DieWildeWaltraud":ImgDir+"DieWildeWaltraud.png", \
-"EinaugigerBert":ImgDir+"EinäugigerBert.png", \
-"Elitesoldat":ImgDir+"Elitesoldat.png", \
-"Huskarl":ImgDir+"Huskarl.png", \
-"Jomswikinger":ImgDir+"Jomswikinger.png", \
-"Kanonier":ImgDir+"Kanonier.png", \
-"Karl":ImgDir+"Karl.png", \
-"Krahenfuse":ImgDir+"Krähenfüße.png", \
-"Langbogenschutzen":ImgDir+"Langbogenschützen.png", \
-"Maat":ImgDir+"Maat.png", \
-"Messerwerfer":ImgDir+"Messerwerfer.png", \
-"Metallgebiss":ImgDir+"Metallgebiss.png", \
-"Miliz":ImgDir+"Miliz.png", \
-"Plunderer":ImgDir+"Plünderer.png", \
-"Raufbold":ImgDir+"Raufbold.png", \
-"Reiterei":ImgDir+"Reiterei.png", \
-"Rekruten":ImgDir+"Rekruten.png", \
-"Schlager":ImgDir+"Schläger.png", \
-"SirRobin":ImgDir+"SirRobin.png", \
-"Soldaten":ImgDir+"Soldaten.png", \
-"Stinktier":ImgDir+"Stinktier.png", \
-"Thrall":ImgDir+"Thrall.png", \
-"VerruckterSmutje":ImgDir+"VerrückterSmutje.png", \
-"Wachhund":ImgDir+"Wachhund.png", \
-"Waldlaufer":ImgDir+"Waldläufer.png", \
-"Walkure":ImgDir+"Walküre.png", \
-"Wolf":ImgDir+"Wolf.png" \
+# юниты на картах
+Karte = {
+	"Spieler"			:("Rekruten", "Bogenschutzen", "Miliz", "Reiterei", "Langbogenschutzen", "Soldaten", "Armbrustschutze", "Elitesoldat", "Kanonier"), \
+	"Die Insel der Freibeuter"	:"", \
+	"Kopfgeldjäger"			:"", \
+	"Alte Bekannte"			:"", \
+	"Mutterliebe"			:"", \
+	"Sumpfhexe"			:"", \
+	"Verrater"			:"", \
+	"Die Schwarzen Priester"	:"", \
+	"Sattelfest"			:"", \
+	"Räuberbande"			:"", \
+	"Beutelschneider"		:"", \
+	"Die Nordmanner"		:"", \
+	"Die Dunkle Bruderschaft"	:"", \
+	"Die Schwarzen Ritter"		:"", \
+	"Viktor der Verschlagene"	:"", \
+	"Sohne der steppe"		:"", \
+	"Einsame Experimente"		:""
+}
+
+# иконки юнитов
+Unit = {
+	# Spieler
+	"Rekruten"		:ImgDir+"Rekruten.png", \
+	"Bogenschutzen"		:ImgDir+"Bogenschützen.png", \
+	"Miliz"			:ImgDir+"Miliz.png", \
+	"Reiterei"		:ImgDir+"Reiterei.png", \
+	"Langbogenschutzen"	:ImgDir+"Langbogenschützen.png", \
+	"Soldaten"		:ImgDir+"Soldaten.png", \
+	"Armbrustschutze"	:ImgDir+"Armbrustschütze.png", \
+	"Elitesoldat"		:ImgDir+"Elitesoldat.png", \
+	"Kanonier"		:ImgDir+"Kanonier.png", \
+	# Räuber
+	"Plunderer"		:ImgDir+"Plünderer.png", \
+	"Steinwerfer"		:"", \
+	"Schlager"		:ImgDir+"Schläger.png", \
+	"Wachhund"		:ImgDir+"Wachhund.png", \
+	"Waldlaufer"		:ImgDir+"Waldläufer.png", \
+	"Raufbold"		:ImgDir+"Raufbold.png", \
+	"EinaugigerBert"	:ImgDir+"EinäugigerBert.png", \
+	"Stinktier"		:ImgDir+"Stinktier.png", \
+	"Chuck"			:"", \
+	"Metallgebiss"		:ImgDir+"Metallgebiss.png", \
+	"DieWildeWaltraud"	:ImgDir+"DieWildeWaltraud.png", \
+	# пираты
+	"Deckschrubber"		:ImgDir+"Deckschrubber.png", \
+	"Krahenfuse"		:ImgDir+"Krähenfüße.png", \
+	"Messerwerfer"		:ImgDir+"Messerwerfer.png", \
+	"Maat"			:ImgDir+"Maat.png", \
+	"VerruckterSmutje"	:ImgDir+"VerrückterSmutje.png", \
+	"BrullenderStier"	:ImgDir+"BrüllenderStier.png", \
+	# ботельшнайдер
+	"DickeBertha"		:ImgDir+"DickeBertha.png", \
+	"SirRobin"		:ImgDir+"SirRobin.png", \
+	"Wolf"			:ImgDir+"Wolf.png", \
+	# викинги
+	"Walkure"		:ImgDir+"Walküre.png", \
+	"Huskarl"		:ImgDir+"Huskarl.png", \
+	"Thrall"		:ImgDir+"Thrall.png", \
+	"Berserker"		:ImgDir+"Berserker.png", \
+	"Karl"			:ImgDir+"Karl.png", \
+	"Jomswikinger"		:ImgDir+"Jomswikinger.png"
 }
 
