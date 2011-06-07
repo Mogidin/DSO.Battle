@@ -9,20 +9,20 @@ Back = ImgDir+"back.png" # подложка
 # юниты на картах
 Karte = {
 	"Spieler"			:("Rekruten", "Bogenschutzen", "Miliz", "Reiterei", "Langbogenschutzen", "Soldaten", "Armbrustschutze", "Elitesoldat", "Kanonier"), \
-	"Die Insel der Freibeuter"	:"", \
-	"Kopfgeldjäger"			:"", \
-	"Alte Bekannte"			:"", \
-	"Mutterliebe"			:"", \
+	"Die Insel der Freibeuter"	:("Deckschrubber", "Pistolenschutzen", "Krahenfuse", "Sabelrassler", "Messerwerfer", "Maat", "VerruckterSmutje"), \
+	"Kopfgeldjager"			:"", \
+	"Alte Bekannte"			:("Kultist", "DunklePriester", "Schattenschleicher", "Feuertanzer", "DunklerHohepriester", "TanzenderDerwisch", "Sumpfhexe"), \
+	"Mutterliebe"			:("Pistolenschutzen", "Krahenfuse", "Maat", "Wolf", "DieWildeWaltraud", "VerruckterSmutje"), \
 	"Sumpfhexe"			:"", \
-	"Verrater"			:"", \
+	"Verrater"			:("DesertierteMiliz", "DesertierterLangbogenschutzen", "DesertierteReiterei", "DesertierterSoldat", "SirRobin", "DickeBertha"), \
 	"Die Schwarzen Priester"	:"", \
 	"Sattelfest"			:"", \
 	"Räuberbande"			:"", \
 	"Beutelschneider"		:"", \
-	"Die Nordmanner"		:"", \
+	"Die Nordmanner"		:("Walkure", "Karl", "Thrall", "Huskarl", "Berserker", "Jomswikinger"), \
 	"Die Dunkle Bruderschaft"	:"", \
 	"Die Schwarzen Ritter"		:"", \
-	"Viktor der Verschlagene"	:"", \
+	"Viktor der Verschlagene"	:("Plunderer", "Schlager", "Wachhund", "Waldlaufer", "Raufbold", "EinaugigerBert", "Stinktier", "Metallgebiss", "DieWildeWaltraud", "Wolf"), \
 	"Sohne der steppe"		:"", \
 	"Einsame Experimente"		:""
 }
@@ -51,10 +51,20 @@ Unit = {
 	"Chuck"			:"", \
 	"Metallgebiss"		:ImgDir+"Metallgebiss.png", \
 	"DieWildeWaltraud"	:ImgDir+"DieWildeWaltraud.png", \
+	# ведьма
+	"Kultist"		:ImgDir+"Kultist.png", \
+	"DunklePriester"	:ImgDir+"DunklerPriester.png", \
+	"Schattenschleicher"	:ImgDir+"Schattenschleicher.png", \
+	"Feuertanzer"		:ImgDir+"Feuertänzer.png", \
+	"DunklerHohepriester"	:ImgDir+"DunklerHohepriester.png", \
+	"TanzenderDerwisch"	:ImgDir+"TanzenderDerwisch.png", \
+	"Sumpfhexe"		:ImgDir+"Sumpfhexe.png", \
 	# пираты
 	"Deckschrubber"		:ImgDir+"Deckschrubber.png", \
+	"Pistolenschutze"	:ImgDir+"Pistolenschütze.png", \
 	"Krahenfuse"		:ImgDir+"Krähenfüße.png", \
 	"Messerwerfer"		:ImgDir+"Messerwerfer.png", \
+	"Sabelrassler"		:ImgDir+"Säbelrassler.png", \
 	"Maat"			:ImgDir+"Maat.png", \
 	"VerruckterSmutje"	:ImgDir+"VerrückterSmutje.png", \
 	"BrullenderStier"	:ImgDir+"BrüllenderStier.png", \
@@ -64,10 +74,10 @@ Unit = {
 	"Wolf"			:ImgDir+"Wolf.png", \
 	# викинги
 	"Walkure"		:ImgDir+"Walküre.png", \
-	"Huskarl"		:ImgDir+"Huskarl.png", \
-	"Thrall"		:ImgDir+"Thrall.png", \
-	"Berserker"		:ImgDir+"Berserker.png", \
 	"Karl"			:ImgDir+"Karl.png", \
+	"Thrall"		:ImgDir+"Thrall.png", \
+	"Huskarl"		:ImgDir+"Huskarl.png", \
+	"Berserker"		:ImgDir+"Berserker.png", \
 	"Jomswikinger"		:ImgDir+"Jomswikinger.png"
 }
 
