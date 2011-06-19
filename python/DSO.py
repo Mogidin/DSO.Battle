@@ -10,20 +10,20 @@ Back = ImgDir+"back.png" # подложка
 Karte = {
 	"Spieler"			:("Rekruten", "Bogenschutzen", "Miliz", "Reiterei", "Langbogenschutzen", "Soldaten", "Armbrustschutze", "Elitesoldat", "Kanonier"), \
 	"Die Insel der Freibeuter"	:("Deckschrubber", "Pistolenschutzen", "Krahenfuse", "Sabelrassler", "Messerwerfer", "Maat", "VerruckterSmutje"), \
-	"Kopfgeldjager"			:"", \
+	"Kopfgeldjäger"			:"", \
 	"Alte Bekannte"			:("Kultist", "DunklePriester", "Schattenschleicher", "Feuertanzer", "DunklerHohepriester", "TanzenderDerwisch", "Sumpfhexe"), \
 	"Mutterliebe"			:("Pistolenschutzen", "Krahenfuse", "Maat", "Wolf", "DieWildeWaltraud", "VerruckterSmutje"), \
 	"Sumpfhexe"			:"", \
-	"Verrater"			:("DesertierteMiliz", "DesertierterLangbogenschutzen", "DesertierteReiterei", "DesertierterSoldat", "SirRobin", "DickeBertha"), \
+	"Verräter"			:("DesertierteMiliz", "DesertierterLangbogenschutzen", "DesertierteReiterei", "DesertierterSoldat", "SirRobin", "DickeBertha"), \
 	"Die Schwarzen Priester"	:"", \
-	"Sattelfest"			:"", \
+	"Sattelfest"			:("Nomade","Lanzenreiter","BerittenerBogenschütze","Kompositbogenschütze","Kataphrakt","BeritteneAmazone","BrüllenderStier"), \
 	"Räuberbande"			:"", \
 	"Beutelschneider"		:"", \
-	"Die Nordmanner"		:("Walkure", "Karl", "Thrall", "Huskarl", "Berserker", "Jomswikinger"), \
+	"Die Nordmänner"		:("Walkure", "Karl", "Thrall", "Huskarl", "Berserker", "Jomswikinger"), \
 	"Die Dunkle Bruderschaft"	:"", \
 	"Die Schwarzen Ritter"		:"", \
 	"Viktor der Verschlagene"	:("Plunderer", "Schlager", "Wachhund", "Waldlaufer", "Raufbold", "EinaugigerBert", "Stinktier", "Metallgebiss", "DieWildeWaltraud", "Wolf"), \
-	"Sohne der steppe"		:"", \
+	"Söhne der Steppe"		:"", \
 	"Einsame Experimente"		:""
 }
 
@@ -41,14 +41,14 @@ Unit = {
 	"Kanonier"		:ImgDir+"Kanonier.png", \
 	# Räuber
 	"Plunderer"		:ImgDir+"Plünderer.png", \
-	"Steinwerfer"		:"", \
+	"Steinwerfer"		:ImgDir+"Steinwerfer.png", \
 	"Schlager"		:ImgDir+"Schläger.png", \
 	"Wachhund"		:ImgDir+"Wachhund.png", \
 	"Waldlaufer"		:ImgDir+"Waldläufer.png", \
 	"Raufbold"		:ImgDir+"Raufbold.png", \
 	"EinaugigerBert"	:ImgDir+"EinäugigerBert.png", \
 	"Stinktier"		:ImgDir+"Stinktier.png", \
-	"Chuck"			:"", \
+	"Chuck"			:ImgDir+"Chuck.png", \
 	"Metallgebiss"		:ImgDir+"Metallgebiss.png", \
 	"DieWildeWaltraud"	:ImgDir+"DieWildeWaltraud.png", \
 	# ведьма
@@ -67,7 +67,7 @@ Unit = {
 	"Sabelrassler"		:ImgDir+"Säbelrassler.png", \
 	"Maat"			:ImgDir+"Maat.png", \
 	"VerruckterSmutje"	:ImgDir+"VerrückterSmutje.png", \
-	"BrullenderStier"	:ImgDir+"BrüllenderStier.png", \
+#	"BrullenderStier"	:ImgDir+"BrüllenderStier.png", \
 	# ботельшнайдер
 	"DickeBertha"		:ImgDir+"DickeBertha.png", \
 	"SirRobin"		:ImgDir+"SirRobin.png", \
@@ -78,6 +78,14 @@ Unit = {
 	"Thrall"		:ImgDir+"Thrall.png", \
 	"Huskarl"		:ImgDir+"Huskarl.png", \
 	"Berserker"		:ImgDir+"Berserker.png", \
-	"Jomswikinger"		:ImgDir+"Jomswikinger.png"
+	"Jomswikinger"		:ImgDir+"Jomswikinger.png", \
+	# Sattelfest
+	"BeritteneAmazone"	:ImgDir+"BeritteneAmazone.png", \
+        "BerittenerBogenschutze":ImgDir+"BerittenerBogenschütze.png", \
+        "BrullenderStier"	:ImgDir+"BrüllenderStier.png", \
+        "Kataphrakt"		:ImgDir+"Kataphrakt.png", \
+        "Kompositbogenschutze"	:ImgDir+"Kompositbogenschütze.png", \
+        "Lanzenreiter"		:ImgDir+"Lanzenreiter.png", \
+        "Nomade"		:ImgDir+"Nomade.png", \
 }
 
