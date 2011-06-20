@@ -234,20 +234,23 @@ if __name__ == "__main__":
                 try:
                         ptype = sys.argv[2]
                 except:
-                        print "\n\tall		: показать всё"
-                        print "\n\tunit		: показать всё"
-                        print "\n\tmap		: показать всё"
-                        print "\n\talias	: показать всё"
+                        print "\tall		: показать всё"
+                        print "\tunit		: показать список юнитов"
+                        print "\tmap		: показать список карт"
+                        print "\tmapunit		: показать юнитов на картах"
+                        print "\talias		: показать алиасы"
                         sys.exit(0)
                 PrintData(ptype)
 	elif type == "-h":
 		print \
 			"\n\t--unit Unit Image	: добавить юнита" \
 			"\n\t--load Dir		: добавить юнитов из каталога" \
-			"\n\t--show Unit	: показать картинку юнита" \
+			"\n\t--show Unit		: показать картинку юнита" \
 			"\n\t--map Map Units...	: указать юнитов на карте" \
 			"\n\t--check 		: проверить базу данных" \
 			"\n\t--alias Alias Name	: добавить алиас для юнита/карты" \
-			"\n\t--print		: показать данные" \
+			"\n\t--print			: показать данные" \
 			""
+	else:
+		print "\nпараметр не распознан"
 

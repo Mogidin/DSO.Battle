@@ -4,8 +4,9 @@ import sys
 import os
 import sqlite3
 import Image, ImageDraw, ImageFont
-import DSO, DSOsql
+import DSOsql
 
+MarkTxt="Mark"
 
 (baseX, baseY) = (60, 90) # размер картинки юнита
 (markX, markY) = (12, 90) # размер картинки границы
@@ -16,13 +17,13 @@ font = ImageFont.truetype(FONT, 12)
 NumArg = len(sys.argv)
 l = (NumArg - 1) / 3 # количество юнитов
 
-MarkPresent = DSO.MarkTxt in sys.argv 
+MarkPresent = MarkTxt in sys.argv 
 
 res = Image.new("RGB", (l*baseX+MarkPresent*markX, baseY)) # формируемая картинка
 
 MarkPrint = 0
 for i in range (l+MarkPresent): # l=2 > range=[0, 1]
-	if sys.argv[1+i*3] == DSO.MarkTxt:
+	if sys.argv[1+i*3] == MarkTxt:
 		# приклеиваем границу
 #		print "есть граница"
 		im = DSOsql.GetImage("mark")
