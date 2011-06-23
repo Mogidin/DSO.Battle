@@ -1,3 +1,4 @@
+#!/usr/bin/env python2.6
 # -*- coding: UTF-8 -*-
 
 import sqlite3
@@ -64,7 +65,24 @@ def SetMapUnits(map, units):
 	        if item == None:
         	        cursor.execute(sqlA, (map, unit))
 	ConnectClose()
- 		
+
+def SetUnitInfo(unit, params):
+	if not len(params) == 7:
+		print "\n параметры: HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
+		sys.exit(1)
+	params.append(unit)
+	ConnectOpen()
+        # проверяем существование элемента в базе
+        sql = "SELECT name FROM Units WHERE name=?"
+        cursor.execute(sql, [unit])
+        item = cursor.fetchone()
+        if not item == None:
+                sql = "UPDATE Units SET HP=?,MinDmg=?,MaxDmg=?,Accuracy=?,Initiative=?,Courage=?,Skills=? WHERE name=?"
+        else:
+                sql = "INSERT INTO Units (HP, MinDmg, MaxDmg, Accuracy, Initiative, Courage, Skills, name) VALUES (?,?,?,?,?,?,?,?)"
+        cursor.execute(sql, params)
+	ConnectClose()
+
 def CheckDB():
 	ConnectOpen()
 	sqlM = "SELECT name FROM Maps"
@@ -186,6 +204,13 @@ if __name__ == "__main__":
 			print "\nнедостаточно параметров"
 			sys.exit(0)
 		InsertImage(name,Fname)
+	elif type == "--setunitinfo":
+                try:
+                        unit = sys.argv[2]
+                except:
+                        print "\nнедостаточно параметров"
+                        sys.exit(0)
+                SetUnitInfo(unit, sys.argv[3:])
 	elif type == "--show": # получаем картинку юнита
 		try:
 			name = sys.argv[2]
@@ -244,6 +269,7 @@ if __name__ == "__main__":
 	elif type == "-h":
 		print \
 			"\n\t--unit Unit Image	: добавить юнита" \
+			"\n\t--setunitinfo Unit Param...	: записать ТТХ юнита" \
 			"\n\t--load Dir		: добавить юнитов из каталога" \
 			"\n\t--show Unit		: показать картинку юнита" \
 			"\n\t--map Map Units...	: указать юнитов на карте" \

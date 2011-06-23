@@ -1,3 +1,4 @@
+#!/usr/bin/env python2.6
 # -*- coding: UTF-8 -*-
 
 import sys
@@ -5,6 +6,7 @@ import os
 import sqlite3
 import Image, ImageDraw, ImageFont
 import DSOsql
+import datetime
 
 MarkTxt="Mark"
 
@@ -47,5 +49,6 @@ for i in range (l+MarkPresent): # l=2 > range=[0, 1]
 		res.paste(back,((i-MarkPrint)*baseX+(MarkPrint*markX), 0))
 		res.paste(im,((i-MarkPrint)*baseX+(MarkPrint*markX)+2, 2))
 
-res.save("out.png")
+d = datetime.datetime.now()
+res.save("out%d%d%d%d%d%d%d.png" % (d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond))
 

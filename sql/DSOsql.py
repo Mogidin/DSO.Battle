@@ -1,8 +1,10 @@
+#!/usr/bin/env python2.6
 # -*- coding: UTF-8 -*-
 
 import sqlite3
 import sys, os
 import Image, ImageFile
+import argparse
 
 
 def ConnectOpen():
@@ -64,7 +66,24 @@ def SetMapUnits(map, units):
 	        if item == None:
         	        cursor.execute(sqlA, (map, unit))
 	ConnectClose()
- 		
+
+def SetUnitInfo(unit, params):
+	if not len(params) == 7:
+		print "\n параметры: HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
+		sys.exit(1)
+	params.append(unit)
+	ConnectOpen()
+        # проверяем существование элемента в базе
+        sql = "SELECT name FROM Units WHERE name=?"
+        cursor.execute(sql, [unit])
+        item = cursor.fetchone()
+        if not item == None:
+                sql = "UPDATE Units SET HP=?,MinDmg=?,MaxDmg=?,Accuracy=?,Initiative=?,Courage=?,Skills=? WHERE name=?"
+        else:
+                sql = "INSERT INTO Units (HP, MinDmg, MaxDmg, Accuracy, Initiative, Courage, Skills, name) VALUES (?,?,?,?,?,?,?,?)"
+        cursor.execute(sql, params)
+	ConnectClose()
+
 def CheckDB():
 	ConnectOpen()
 	sqlM = "SELECT name FROM Maps"
@@ -125,7 +144,7 @@ def SetAlias(alias, name):
 	cursor.execute(sql, (name, alias))
 	ConnectClose()
 
-def PrintData(type):
+def PrintData(type, params):
 	if type == "all":
 		PrintData("unit")
 		PrintData("mapunit")
@@ -148,11 +167,17 @@ def PrintData(type):
 		ConnectClose()
 	elif type == "mapunit":
 		ConnectOpen()
+		if len(params) > 0:
+			maps = []
+			for map in params:
+				maps.append((map,))
+		else:
+			sql = "SELECT name FROM Maps ORDER BY name"
+			cursor.execute(sql)
+			maps = cursor.fetchall()
+
 		print "\nMapUnit list:"
-		sql = "SELECT name FROM Maps ORDER BY name"
 		sqlMU = "SELECT unit FROM MapUnit WHERE map=?"
-		cursor.execute(sql)
-		maps = cursor.fetchall()
 		for map in maps:
 			print "\t%s" % map[0]
 			cursor.execute(sqlMU,[map[0]])
@@ -186,6 +211,13 @@ if __name__ == "__main__":
 			print "\nнедостаточно параметров"
 			sys.exit(0)
 		InsertImage(name,Fname)
+	elif type == "--setunitinfo":
+                try:
+                        unit = sys.argv[2]
+                except:
+                        print "\nнедостаточно параметров"
+                        sys.exit(0)
+                SetUnitInfo(unit, sys.argv[3:])
 	elif type == "--show": # получаем картинку юнита
 		try:
 			name = sys.argv[2]
@@ -240,10 +272,11 @@ if __name__ == "__main__":
                         print "\tmapunit		: показать юнитов на картах"
                         print "\talias		: показать алиасы"
                         sys.exit(0)
-                PrintData(ptype)
+                PrintData(ptype, sys.argv[3:])
 	elif type == "-h":
 		print \
 			"\n\t--unit Unit Image	: добавить юнита" \
+			"\n\t--setunitinfo Unit Param...	: записать ТТХ юнита" \
 			"\n\t--load Dir		: добавить юнитов из каталога" \
 			"\n\t--show Unit		: показать картинку юнита" \
 			"\n\t--map Map Units...	: указать юнитов на карте" \
