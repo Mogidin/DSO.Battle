@@ -68,9 +68,9 @@ def SetMapUnits(map, units):
 	ConnectClose()
 
 def SetUnitInfo(unit, params):
-	if not len(params) == 7:
-		print "\n параметры: HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
-		sys.exit(1)
+#	if not len(params) == 7:
+#		print "\n параметры: HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
+#		sys.exit(1)
 	params.append(unit)
 	ConnectOpen()
         # проверяем существование элемента в базе
@@ -145,11 +145,11 @@ def SetAlias(alias, name):
 	ConnectClose()
 
 def PrintData(type, params):
-	if type == "all":
-		PrintData("unit")
-		PrintData("mapunit")
-		PrintData("alias")
-	elif type == "unit":
+	if type == "All":
+		PrintData("Unit", [])
+		PrintData("MapUnit", [])
+		PrintData("Alias", [])
+	elif type == "Unit":
 		ConnectOpen()
 		print "\nUnit list:"
 		sql = "SELECT name FROM Units ORDER BY name"
@@ -157,7 +157,7 @@ def PrintData(type, params):
 		for unit in cursor.fetchall():
 			print "\t%s" % unit[0]
 		ConnectClose()
-	elif type == "map":
+	elif type == "Map":
 		ConnectOpen()
                 print "\nMap list:"
                 sql = "SELECT name FROM Maps ORDER BY name"
@@ -165,7 +165,7 @@ def PrintData(type, params):
                 for map in cursor.fetchall():
                         print "\t%s" % map[0]
 		ConnectClose()
-	elif type == "mapunit":
+	elif type == "MapUnit":
 		ConnectOpen()
 		if len(params) > 0:
 			maps = []
@@ -185,7 +185,7 @@ def PrintData(type, params):
 			for unit in units:
 				print "\t\t%s" % unit[0]
 		ConnectClose()
-	elif type == "alias":
+	elif type == "Alias":
 		ConnectOpen()
                 print "\nAlias list:"
                 sql = "SELECT alias, name FROM Alias ORDER BY name"
@@ -197,45 +197,31 @@ def PrintData(type, params):
 if __name__ == "__main__":
 #	reload(sys)
 #	sys.setdefaultencoding("UTF-8")
-	try:
-		type = sys.argv[1]
-	except:
-		print "\nнедостаточно параметров.\nпараметр -h для вывода справки."
-		sys.exit(0)
+	parser = argparse.ArgumentParser()
+	parser.add_argument('name', nargs='*', metavar=('"Name unit or map"'), default=None)
+	parser.add_argument('--image', '-i', nargs=1, metavar=('Image'), dest='UnitImage')
+	parser.add_argument('--setunitinfo', '-sui', nargs=7, metavar=('HP', 'MinDmg', 'MaxDmg', 'Acuracy', 'Initiative', 'Courage', 'Skills'), dest='UnitInfo')
+# HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
+	parser.add_argument('--show', '-s', action='store_true')
+	parser.add_argument('--mapunit', '-mu', nargs='+', dest='MapUnit')
+	parser.add_argument('--check', '-c', action='store_true')
+	parser.add_argument('--alias', '-a', nargs=2, metavar=('"Name unit or map"', 'Alias'))
+	parser.add_argument('--print', '-p', choices=['All', 'Unit', 'Map', 'MapUnit', 'Alias'], dest='PrintType')
+	parser.add_argument('--load', '-l', nargs=1, dest='Dir')
 
-	if type == "--unit": # добавляем юнит
-		try:
-			name = sys.argv[2]
-			Fname = sys.argv[3]
-		except:
-			print "\nнедостаточно параметров"
-			sys.exit(0)
-		InsertImage(name,Fname)
-	elif type == "--setunitinfo":
-                try:
-                        unit = sys.argv[2]
-                except:
-                        print "\nнедостаточно параметров"
-                        sys.exit(0)
-                SetUnitInfo(unit, sys.argv[3:])
-	elif type == "--show": # получаем картинку юнита
-		try:
-			name = sys.argv[2]
-		except:
-			print "\nнедостаточно параметров"
-			sys.exit(0)
-		im = GetImage(name)
-		if im == None:
-			pass
-		else:
+	args = parser.parse_known_args()[0]
+	print args
+
+	if args.UnitImage != None and args.name != None: # добавить картинку юнита
+		InsertImage(args.name[0], args.UnitImage[0])
+	if args.UnitInfo != None and args.name != None: # добавить информацию по юниту
+		SetUnitInfo(args.name[0], args.UnitInfo)
+	if args.show == True and args.name != None: # показать картинку юнита
+		im = GetImage(args.name[0])
+		if im != None:
 			im.show()
-	elif type == "--load": # добавляем юнитов из каталога
-                try:
-                        dir = sys.argv[2]
-                except:
-                        print "\nнедостаточно параметров"
-                        sys.exit(0)
-
+	if args.Dir != None: # добавляем картинки юнитов из каталога
+		dir = args.Dir
 		if not os.path.exists(dir):
                         print "\nпуть не существует"
 			sys.exit(1)
@@ -245,45 +231,13 @@ if __name__ == "__main__":
 			if os.path.isfile(fullname):        # если это файл...
 				name = os.path.splitext(os.path.basename(fullname))[0]
 				InsertImage(name, fullname)
-	elif type == "--map": # задаём список юнитов на карте
-                try:
-                        map = sys.argv[2]
-                except:
-                        print "\nнедостаточно параметров"
-                        sys.exit(0)
-		SetMapUnits(map, sys.argv[3:])
-        elif type == "--check": # задаём список юнитов на карте
-                CheckDB()
-        elif type == "--alias": # задать алиас
-                try:
-                        alias = sys.argv[2]
-			name = sys.argv[3]
-                except:
-                        print "\nнедостаточно параметров"
-                        sys.exit(0)
-                SetAlias(alias, name)
-	elif type == "--print":
-                try:
-                        ptype = sys.argv[2]
-                except:
-                        print "\tall		: показать всё"
-                        print "\tunit		: показать список юнитов"
-                        print "\tmap		: показать список карт"
-                        print "\tmapunit		: показать юнитов на картах"
-                        print "\talias		: показать алиасы"
-                        sys.exit(0)
-                PrintData(ptype, sys.argv[3:])
-	elif type == "-h":
-		print \
-			"\n\t--unit Unit Image	: добавить юнита" \
-			"\n\t--setunitinfo Unit Param...	: записать ТТХ юнита" \
-			"\n\t--load Dir		: добавить юнитов из каталога" \
-			"\n\t--show Unit		: показать картинку юнита" \
-			"\n\t--map Map Units...	: указать юнитов на карте" \
-			"\n\t--check 		: проверить базу данных" \
-			"\n\t--alias Alias Name	: добавить алиас для юнита/карты" \
-			"\n\t--print			: показать данные" \
-			""
-	else:
-		print "\nпараметр не распознан"
+	if args.MapUnit != None and args.name != None: # задаём список юнитов на карте
+		SetMapUnits(args.name[0], args.MapUnit)
+	if args.check == True: # проверяем базу данных
+		CheckDB()
+	if args.PrintType != None: # показать данные
+		PrintData(args.PrintType, args.name)
+        if args.alias != None and args.name != None: # задать алиас
+		SetAlias(args.alias, args.name)
 
+	sys.exit(0)
