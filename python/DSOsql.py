@@ -6,7 +6,6 @@ import sys, os
 import Image, ImageFile
 import argparse
 
-
 def ConnectOpen():
 	global connection
 	global cursor
@@ -20,7 +19,20 @@ def ConnectClose():
         connection.commit()
         connection.close()	
 
+def UnAlias(alias):
+	ConnectOpen()
+	sql = "SELECT name FROM Alias WHERE alias=?"
+	cursor.execute(sql, [alias])
+        item = cursor.fetchone()
+        if not item == None:
+		name = item[0]
+	else:
+		name = alias
+	ConnectClose()
+	return name
+
 def InsertImage(name, Fname):
+	name = UnAlias(name)
 	ConnectOpen()
 	f = file(Fname, "rb")
 	data = f.read()
@@ -30,13 +42,18 @@ def InsertImage(name, Fname):
 	cursor.execute(sql, [name])
         item = cursor.fetchone()
         if not item == None:
-		sql = "UPDATE Units SET img=? WHERE name=?"
+		if args.override:
+			sql = "UPDATE Units SET img=? WHERE name=?"
+		else:
+			print "\n такой элемент уже существует"
+			sys.exit(1)
 	else:
 		sql = "INSERT INTO Units (img, name) VALUES (?,?)"
 	cursor.execute(sql, (sqlite3.Binary(data), name) )
 	ConnectClose()
 
 def GetImage(name):
+	name = UnAlias(name)
 	ConnectOpen()
 	sql = "SELECT img FROM Units WHERE name=?"
 	cursor.execute(sql, [name])
@@ -68,6 +85,7 @@ def SetMapUnits(map, units):
 	ConnectClose()
 
 def SetUnitInfo(unit, params):
+	unit = UnAlias(unit)
 #	if not len(params) == 7:
 #		print "\n параметры: HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
 #		sys.exit(1)
@@ -78,7 +96,11 @@ def SetUnitInfo(unit, params):
         cursor.execute(sql, [unit])
         item = cursor.fetchone()
         if not item == None:
-                sql = "UPDATE Units SET HP=?,MinDmg=?,MaxDmg=?,Accuracy=?,Initiative=?,Courage=?,Skills=? WHERE name=?"
+		if args.override:
+			sql = "UPDATE Units SET HP=?,MinDmg=?,MaxDmg=?,Accuracy=?,Initiative=?,Courage=?,Skills=? WHERE name=?"
+		else:
+			print "\n такой элемент уже существует"
+			sys.exit(1)
         else:
                 sql = "INSERT INTO Units (HP, MinDmg, MaxDmg, Accuracy, Initiative, Courage, Skills, name) VALUES (?,?,?,?,?,?,?,?)"
         cursor.execute(sql, params)
@@ -138,7 +160,11 @@ def SetAlias(alias, name):
         cursor.execute(sql, [alias])
         item = cursor.fetchone()
         if not item == None:
-                sql = "UPDATE Alias SET name=? WHERE alias=?"
+		if args.override:
+			sql = "UPDATE Alias SET name=? WHERE alias=?"
+		else:
+			print "\n такой элемент уже существует"
+			sys.exit(1)
         else:
                 sql = "INSERT INTO Alias (name, alias) VALUES (?,?)"
 	cursor.execute(sql, (name, alias))
@@ -197,29 +223,35 @@ def PrintData(type, params):
 if __name__ == "__main__":
 #	reload(sys)
 #	sys.setdefaultencoding("UTF-8")
+	global args
+
 	parser = argparse.ArgumentParser()
-	parser.add_argument('name', nargs='*', metavar=('"Name unit or map"'), default=None)
+	parser.add_argument('name', nargs='*', metavar=('Name'), default=None)
 	parser.add_argument('--image', '-i', nargs=1, metavar=('Image'), dest='UnitImage')
 	parser.add_argument('--setunitinfo', '-sui', nargs=7, metavar=('HP', 'MinDmg', 'MaxDmg', 'Acuracy', 'Initiative', 'Courage', 'Skills'), dest='UnitInfo')
 # HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
 	parser.add_argument('--show', '-s', action='store_true')
 	parser.add_argument('--mapunit', '-mu', nargs='+', dest='MapUnit')
 	parser.add_argument('--check', '-c', action='store_true')
-	parser.add_argument('--alias', '-a', nargs=2, metavar=('"Name unit or map"', 'Alias'))
+	parser.add_argument('--alias', '-a', nargs=1, metavar=('Alias'))
 	parser.add_argument('--print', '-p', choices=['All', 'Unit', 'Map', 'MapUnit', 'Alias'], dest='PrintType')
 	parser.add_argument('--load', '-l', nargs=1, dest='Dir')
+	parser.add_argument('--override', '-y', action='store_true')
 
 	args = parser.parse_known_args()[0]
-	print args
+#	print args
 
 	if args.UnitImage != None and args.name != None: # добавить картинку юнита
 		InsertImage(args.name[0], args.UnitImage[0])
+
 	if args.UnitInfo != None and args.name != None: # добавить информацию по юниту
 		SetUnitInfo(args.name[0], args.UnitInfo)
+
 	if args.show == True and args.name != None: # показать картинку юнита
 		im = GetImage(args.name[0])
 		if im != None:
 			im.show()
+
 	if args.Dir != None: # добавляем картинки юнитов из каталога
 		dir = args.Dir
 		if not os.path.exists(dir):
@@ -231,13 +263,17 @@ if __name__ == "__main__":
 			if os.path.isfile(fullname):        # если это файл...
 				name = os.path.splitext(os.path.basename(fullname))[0]
 				InsertImage(name, fullname)
+
 	if args.MapUnit != None and args.name != None: # задаём список юнитов на карте
 		SetMapUnits(args.name[0], args.MapUnit)
+
 	if args.check == True: # проверяем базу данных
 		CheckDB()
+
 	if args.PrintType != None: # показать данные
 		PrintData(args.PrintType, args.name)
+
         if args.alias != None and args.name != None: # задать алиас
-		SetAlias(args.alias, args.name)
+		SetAlias(args.alias[0], args.name[0])
 
 	sys.exit(0)

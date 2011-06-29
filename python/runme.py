@@ -32,7 +32,7 @@ for i in range (l+MarkPresent): # l=2 > range=[0, 1]
 		res.paste(im,(i*baseX, 0))
 		MarkPrint = 1
 	else:
-		Unit     = sys.argv[1+(i-MarkPrint)*3+MarkPrint]
+		Unit     = DSOsql.UnAlias(sys.argv[1+(i-MarkPrint)*3+MarkPrint])
 		EndNum   = sys.argv[2+(i-MarkPrint)*3+MarkPrint]
 		StartNum = sys.argv[3+(i-MarkPrint)*3+MarkPrint]
 		# пишем текст на подложке
