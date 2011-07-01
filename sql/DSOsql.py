@@ -6,130 +6,119 @@ import sys, os
 import Image, ImageFile
 import argparse
 
-def ConnectOpen():
-	global connection
-	global cursor
+class DBClass:
+	def __init__(self, filename):
+		self.file = filename
+	def Connect(self):
+		self.connection = sqlite3.connect(self.file)
+		self.connection.text_factory = str
+		self.cursor = self.connection.cursor()
+	def Commit(self):
+	        self.connection.commit()
+	def Close(self):
+		self.connection.close()
+		
 
-	connection = sqlite3.connect("DSO.Battle.db3")
-	#connection = sqlite3.connect("/home/mogidin/Downloads/web2py/applications/test/databases/DSO.Battle.db3")
-	connection.text_factory = str
-	cursor = connection.cursor()
-
-def ConnectClose():
-        connection.commit()
-        connection.close()	
-
-def UnAlias(alias):
-	ConnectOpen()
+def UnAlias(db, alias):
 	sql = "SELECT name FROM Alias WHERE alias=?"
-	cursor.execute(sql, [alias])
-        item = cursor.fetchone()
+	db.cursor.execute(sql, [alias])
+        item = db.cursor.fetchone()
         if not item == None:
 		name = item[0]
 	else:
 		name = alias
-	ConnectClose()
 	return name
 
-def InsertImage(name, Fname):
-	name = UnAlias(name)
-	ConnectOpen()
+def InsertImage(db, name, Fname):
+	name = UnAlias(db, name)
 	f = file(Fname, "rb")
 	data = f.read()
 	f.close()
 	# проверяем существование элемента в базе
 	sql = "SELECT name FROM Units WHERE name=?"
-	cursor.execute(sql, [name])
-        item = cursor.fetchone()
+	db.cursor.execute(sql, [name])
+        item = db.cursor.fetchone()
         if not item == None:
-		if args.override:
+		if args.replace:
 			sql = "UPDATE Units SET img=? WHERE name=?"
 		else:
 			print "\n такой элемент уже существует"
 			sys.exit(1)
 	else:
 		sql = "INSERT INTO Units (img, name) VALUES (?,?)"
-	cursor.execute(sql, (sqlite3.Binary(data), name) )
-	ConnectClose()
+	db.cursor.execute(sql, (sqlite3.Binary(data), name) )
 
-def GetImage(name):
-	name = UnAlias(name)
-	ConnectOpen()
+def GetImage(db, name):
+	name = UnAlias(db, name)
 	sql = "SELECT img FROM Units WHERE name=?"
-	cursor.execute(sql, [name])
-	item = cursor.fetchone()
+	db.cursor.execute(sql, [name])
+	item = db.cursor.fetchone()
 	if item == None:
 		return
 	data = item[0]
 	p = ImageFile.Parser()
 	p.feed(data)
-	ConnectClose()
 	return p.close()
 
-def SetMapUnits(map, units):
-	ConnectOpen()
+def SetMapUnits(db, map, units):
         # проверяем существование элемента в базе
         sql = "SELECT name FROM Maps WHERE name=?"
-        cursor.execute(sql, [map])
-        item = cursor.fetchone()
+        db.cursor.execute(sql, [map])
+        item = db.cursor.fetchone()
         if item == None: # добавляем карту
 		sql = "INSERT INTO Maps (name) VALUES (?)"
-		cursor.execute(sql, [map])
+		db.cursor.execute(sql, [map])
 	sqlS = "SELECT map, unit FROM MapUnit WHERE map=? AND unit=?"
 	sqlA = "INSERT INTO MapUnit (map, unit) VALUES (?, ?)"
 	for unit in units:
-		cursor.execute(sqlS, (map, unit))
+		db.cursor.execute(sqlS, (map, unit))
 		item = cursor.fetchone()
 	        if item == None:
-        	        cursor.execute(sqlA, (map, unit))
-	ConnectClose()
+        	        db.cursor.execute(sqlA, (map, unit))
 
-def SetUnitInfo(unit, params):
-	unit = UnAlias(unit)
+def SetUnitInfo(db, unit, params):
+	unit = UnAlias(db, unit)
 #	if not len(params) == 7:
 #		print "\n параметры: HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
 #		sys.exit(1)
 	params.append(unit)
-	ConnectOpen()
         # проверяем существование элемента в базе
         sql = "SELECT name FROM Units WHERE name=?"
-        cursor.execute(sql, [unit])
-        item = cursor.fetchone()
+        db.cursor.execute(sql, [unit])
+        item = db.cursor.fetchone()
         if not item == None:
-		if args.override:
+		if args.replace:
 			sql = "UPDATE Units SET HP=?,MinDmg=?,MaxDmg=?,Accuracy=?,Initiative=?,Courage=?,Skills=? WHERE name=?"
 		else:
 			print "\n такой элемент уже существует"
 			sys.exit(1)
         else:
                 sql = "INSERT INTO Units (HP, MinDmg, MaxDmg, Accuracy, Initiative, Courage, Skills, name) VALUES (?,?,?,?,?,?,?,?)"
-        cursor.execute(sql, params)
-	ConnectClose()
+        db.cursor.execute(sql, params)
 
-def CheckDB():
-	ConnectOpen()
+def CheckDB(db):
 	sqlM = "SELECT name FROM Maps"
-	cursor.execute(sqlM)
+	db.cursor.execute(sqlM)
 	Maps=[]
-	for map in cursor.fetchall():
+	for map in db.cursor.fetchall():
 		Maps.append(map[0])
 
         sqlU = "SELECT name FROM Units"
-        cursor.execute(sqlU)
+        db.cursor.execute(sqlU)
         Units=[]
-        for unit in cursor.fetchall():
+        for unit in db.cursor.fetchall():
                 Units.append(unit[0])
 
 	sqlMUm = "SELECT DISTINCT map FROM MapUnit"
-	cursor.execute(sqlMUm)
+	db.cursor.execute(sqlMUm)
 	MUmap=[]
-	for map in cursor.fetchall():
+	for map in db.cursor.fetchall():
                 MUmap.append(map[0])
 
         sqlMUu = "SELECT DISTINCT unit FROM MapUnit"
-        cursor.execute(sqlMUu)
+        db.cursor.execute(sqlMUu)
         MUunit=[]
-        for unit in cursor.fetchall():
+        for unit in db.cursor.fetchall():
                 MUunit.append(unit[0])
 	
 	print "\nCheck MapUnits in Maps..."
@@ -151,79 +140,71 @@ def CheckDB():
         for unit in Units:
                 if not unit in MUunit:
                         print "Unit '%s' from Units not found in MapUnit" % unit
-	ConnectClose()
 
-def SetAlias(alias, name):
-	ConnectOpen()
+def SetAlias(db, alias, name):
         # проверяем существование элемента в базе
         sql = "SELECT alias FROM Alias WHERE alias=?"
-        cursor.execute(sql, [alias])
-        item = cursor.fetchone()
+        db.cursor.execute(sql, [alias])
+        item = db.cursor.fetchone()
         if not item == None:
-		if args.override:
+		if args.replace:
 			sql = "UPDATE Alias SET name=? WHERE alias=?"
 		else:
 			print "\n такой элемент уже существует"
 			sys.exit(1)
         else:
                 sql = "INSERT INTO Alias (name, alias) VALUES (?,?)"
-	cursor.execute(sql, (name, alias))
-	ConnectClose()
+	db.cursor.execute(sql, (name, alias))
 
-def PrintData(type, params):
+def PrintData(db, type, params):
 	if type == "All":
-		PrintData("Unit", [])
-		PrintData("MapUnit", [])
-		PrintData("Alias", [])
+		PrintData(db, "Unit", [])
+		PrintData(db, "MapUnit", [])
+		PrintData(db, "Alias", [])
 	elif type == "Unit":
-		ConnectOpen()
 		print "\nUnit list:"
 		sql = "SELECT name FROM Units ORDER BY name"
-		cursor.execute(sql)
-		for unit in cursor.fetchall():
+		db.cursor.execute(sql)
+		for unit in db.cursor.fetchall():
 			print "\t%s" % unit[0]
-		ConnectClose()
 	elif type == "Map":
-		ConnectOpen()
                 print "\nMap list:"
                 sql = "SELECT name FROM Maps ORDER BY name"
-                cursor.execute(sql)
-                for map in cursor.fetchall():
+                db.cursor.execute(sql)
+                for map in db.cursor.fetchall():
                         print "\t%s" % map[0]
-		ConnectClose()
 	elif type == "MapUnit":
-		ConnectOpen()
 		if len(params) > 0:
 			maps = []
 			for map in params:
 				maps.append((map,))
 		else:
 			sql = "SELECT name FROM Maps ORDER BY name"
-			cursor.execute(sql)
-			maps = cursor.fetchall()
+			db.cursor.execute(sql)
+			maps = db.cursor.fetchall()
 
 		print "\nMapUnit list:"
 		sqlMU = "SELECT unit FROM MapUnit WHERE map=?"
 		for map in maps:
 			print "\t%s" % map[0]
-			cursor.execute(sqlMU,[map[0]])
-			units = cursor.fetchall()
+			db.cursor.execute(sqlMU,[map[0]])
+			units = db.cursor.fetchall()
 			for unit in units:
 				print "\t\t%s" % unit[0]
-		ConnectClose()
 	elif type == "Alias":
-		ConnectOpen()
                 print "\nAlias list:"
                 sql = "SELECT alias, name FROM Alias ORDER BY name"
-                cursor.execute(sql)
-                for alias in cursor.fetchall():
+                db.cursor.execute(sql)
+                for alias in db.cursor.fetchall():
                         print "\t%s\t: %s" % (alias[0], alias[1])
-		ConnectClose()
 
 if __name__ == "__main__":
 #	reload(sys)
 #	sys.setdefaultencoding("UTF-8")
 	global args
+
+	db = DBClass("DSO.Battle.db3")
+	db.Connect()
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('name', nargs='*', metavar=('Name'), default=None)
@@ -236,19 +217,21 @@ if __name__ == "__main__":
 	parser.add_argument('--alias', '-a', nargs=1, metavar=('Alias'))
 	parser.add_argument('--print', '-p', choices=['All', 'Unit', 'Map', 'MapUnit', 'Alias'], dest='PrintType')
 	parser.add_argument('--load', '-l', nargs=1, dest='Dir')
-	parser.add_argument('--override', '-y', action='store_true')
+	parser.add_argument('--replace', '-y', action='store_true')
 
 	args = parser.parse_known_args()[0]
 #	print args
 
 	if args.UnitImage != None and args.name != None: # добавить картинку юнита
 		InsertImage(args.name[0], args.UnitImage[0])
+		db.Commit()
 
 	if args.UnitInfo != None and args.name != None: # добавить информацию по юниту
 		SetUnitInfo(args.name[0], args.UnitInfo)
+		db.Commit()
 
 	if args.show == True and args.name != None: # показать картинку юнита
-		im = GetImage(args.name[0])
+		im = GetImage(db, args.name[0])
 		if im != None:
 			im.show()
 
@@ -263,9 +246,11 @@ if __name__ == "__main__":
 			if os.path.isfile(fullname):        # если это файл...
 				name = os.path.splitext(os.path.basename(fullname))[0]
 				InsertImage(name, fullname)
+		db.Commit()
 
 	if args.MapUnit != None and args.name != None: # задаём список юнитов на карте
 		SetMapUnits(args.name[0], args.MapUnit)
+		db.Commit()
 
 	if args.check == True: # проверяем базу данных
 		CheckDB()
@@ -275,5 +260,7 @@ if __name__ == "__main__":
 
         if args.alias != None and args.name != None: # задать алиас
 		SetAlias(args.alias[0], args.name[0])
+		db.Commit()
 
+	db.Close()
 	sys.exit(0)

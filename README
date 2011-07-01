@@ -1,5 +1,5 @@
 Для запуска понадобятся Python 2.6 и Python Imaging Library (http://www.pythonware.com/products/pil/)
 
-Пример: python2.6 runme.py Rekruten 0 100 Soldaten 50 75 Mark Maat 10 50
+Пример: python2.6 runme.py Rekrut 0 100 Soldat 50 75 Mark Maat 10 50
 
 Результат сохраняется в текущем каталоге с именем out.png
