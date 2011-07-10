@@ -72,7 +72,7 @@ def SetMapUnits(db, map, units):
 	sqlA = "INSERT INTO MapUnit (map, unit) VALUES (?, ?)"
 	for unit in units:
 		db.cursor.execute(sqlS, (map, unit))
-		item = cursor.fetchone()
+		item = db.cursor.fetchone()
 	        if item == None:
         	        db.cursor.execute(sqlA, (map, unit))
 
@@ -95,6 +95,14 @@ def SetUnitInfo(db, unit, params):
         else:
                 sql = "INSERT INTO Units (HP, MinDmg, MaxDmg, Accuracy, Initiative, Courage, Skills, name) VALUES (?,?,?,?,?,?,?,?)"
         db.cursor.execute(sql, params)
+
+def GetUnitInfo(db, unit):
+	unit = UnAlias(db, unit)
+        sql = "SELECT HP,MinDmg,MaxDmg,Accuracy,Initiative,Courage,Skills FROM Units WHERE name=?"
+        db.cursor.execute(sql, [unit])
+        item = db.cursor.fetchone()
+        if not item == None:
+		print "{7} # HP: {0}; MinDmg: {1}; MaxDmg: {2}; Accuracy: {3}; Initiative: {4}; Courage: {5}; Skills: {6};".format(item[0], item[1], item[2], item[3], item[4], item[5], item[6], unit)
 
 def CheckDB(db):
 	sqlM = "SELECT name FROM Maps"
@@ -190,7 +198,14 @@ def PrintData(db, type, params):
 			db.cursor.execute(sqlMU,[map[0]])
 			units = db.cursor.fetchall()
 			for unit in units:
-				print "\t\t%s" % unit[0]
+				strA = ""
+				if args.verbose:
+					sqlA = "SELECT alias FROM Alias WHERE name=?"
+					db.cursor.execute(sqlA, [unit[0]])
+					item = db.cursor.fetchone()
+					if item != None:
+						strA = "(%s) " % item
+				print "\t\t%s%s" % (strA, unit[0])
 	elif type == "Alias":
                 print "\nAlias list:"
                 sql = "SELECT alias, name FROM Alias ORDER BY name"
@@ -211,6 +226,7 @@ if __name__ == "__main__":
 	parser.add_argument('--image', '-i', nargs=1, metavar=('Image'), dest='UnitImage')
 	parser.add_argument('--setunitinfo', '-sui', nargs=7, metavar=('HP', 'MinDmg', 'MaxDmg', 'Acuracy', 'Initiative', 'Courage', 'Skills'), dest='UnitInfo')
 # HP, MinDmg, MaxDmg, Accuracy, Initiative [F-Fast, N-Normal, S-Slow], Courage, Skills [H-HeadHunter, S-SplashDamage, T-TurmBonus, N-None]"
+	parser.add_argument('--getunitinfo', '-gui', action='store_true', dest='UnitInfo')
 	parser.add_argument('--show', '-s', action='store_true')
 	parser.add_argument('--mapunit', '-mu', nargs='+', dest='MapUnit')
 	parser.add_argument('--check', '-c', action='store_true')
@@ -218,16 +234,19 @@ if __name__ == "__main__":
 	parser.add_argument('--print', '-p', choices=['All', 'Unit', 'Map', 'MapUnit', 'Alias'], dest='PrintType')
 	parser.add_argument('--load', '-l', nargs=1, dest='Dir')
 	parser.add_argument('--replace', '-y', action='store_true')
+	parser.add_argument('--verbose', '-v', action='store_true')
 
 	args = parser.parse_known_args()[0]
 #	print args
 
 	if args.UnitImage != None and args.name != None: # добавить картинку юнита
-		InsertImage(args.name[0], args.UnitImage[0])
+		InsertImage(db, args.name[0], args.UnitImage[0])
 		db.Commit()
 
-	if args.UnitInfo != None and args.name != None: # добавить информацию по юниту
-		SetUnitInfo(args.name[0], args.UnitInfo)
+	if args.UnitInfo == True and args.name != None: # показать информацию по юниту
+		GetUnitInfo(db, args.name[0])
+	elif args.UnitInfo != None and args.name != None: # добавить информацию по юниту
+		SetUnitInfo(db, args.name[0], args.UnitInfo)
 		db.Commit()
 
 	if args.show == True and args.name != None: # показать картинку юнита
@@ -245,21 +264,21 @@ if __name__ == "__main__":
 			fullname = os.path.join(dir, ifile)  # получаем полное имя
 			if os.path.isfile(fullname):        # если это файл...
 				name = os.path.splitext(os.path.basename(fullname))[0]
-				InsertImage(name, fullname)
+				InsertImage(db, name, fullname)
 		db.Commit()
 
 	if args.MapUnit != None and args.name != None: # задаём список юнитов на карте
-		SetMapUnits(args.name[0], args.MapUnit)
+		SetMapUnits(db, args.name[0], args.MapUnit)
 		db.Commit()
 
 	if args.check == True: # проверяем базу данных
-		CheckDB()
+		CheckDB(db)
 
 	if args.PrintType != None: # показать данные
-		PrintData(args.PrintType, args.name)
+		PrintData(db, args.PrintType, args.name)
 
         if args.alias != None and args.name != None: # задать алиас
-		SetAlias(args.alias[0], args.name[0])
+		SetAlias(db, args.alias[0], args.name[0])
 		db.Commit()
 
 	db.Close()
