@@ -71,6 +71,7 @@ def SetMapUnits(db, map, units):
 	sqlS = "SELECT map, unit FROM MapUnit WHERE map=? AND unit=?"
 	sqlA = "INSERT INTO MapUnit (map, unit) VALUES (?, ?)"
 	for unit in units:
+		unit = UnAlias(db, unit)
 		db.cursor.execute(sqlS, (map, unit))
 		item = db.cursor.fetchone()
 	        if item == None:
