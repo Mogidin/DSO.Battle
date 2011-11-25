@@ -1,4 +1,5 @@
 Для запуска понадобятся Python 2.6 и Python Imaging Library (http://www.pythonware.com/products/pil/)
+Виндузятникам PIL брать тут: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pil
 
 Пример:  python2.6 runme.py Rekrut 0 100 Soldat 50 75 Mark Maat 10 50
 или так: python2.6 runme.py R 0 100 S 50 75 Mark MA 10 50

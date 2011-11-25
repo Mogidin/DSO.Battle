@@ -215,8 +215,8 @@ def PrintData(db, type, params):
                         print "\t%s\t: %s" % (alias[0], alias[1])
 
 if __name__ == "__main__":
-#	reload(sys)
-#	sys.setdefaultencoding("UTF-8")
+	reload(sys)
+	sys.setdefaultencoding("UTF-8")
 	global args
 
 	db = DBClass("DSO.Battle.db3")

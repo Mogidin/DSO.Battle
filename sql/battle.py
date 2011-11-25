@@ -256,7 +256,7 @@ if __name__ == "__main__":
 #	a2 = Army([("Rekrut", 70), ("Langbogenschütze", 130), ("General", 1)], db)
 	
 	a1 = Army([("Maat", 100)], db)
-	a2 = Army([("Soldat", 200), ("General", 1)], db)
+	a2 = Army([("Armbrustschütze", 160),("Soldat", 40), ("General", 1)], db)
 
 	b = Battle(a1, a2)
 
